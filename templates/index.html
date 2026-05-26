@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Study Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- HEADER -->
+      <div class="top-bar">
+        <div>
+          <p class="small-title">REAL-TIME STUDY ENVIRONMENT DASHBOARD</p>
+          <h1>Smart Study Assistant</h1>
+          <div class="user-status-card">
+            <div class="user-info">
+              <span
+                >You are logged in as <strong>{{ user.email }}</strong></span
+              >
+            </div>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+          </div>
+        </div>
+        <div class="status-card">
+          <h3>SYSTEM STATUS</h3>
+          <span class="status-pill">Normal</span>
+          <p>Updated every 5 seconds</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- LEFT -->
+        <div class="left-section">
+          <!-- ACTIVE WARNINGS -->
+          <div class="warning-card">
+            <div class="warning-title-row">
+              <span class="warning-icon">⚠</span>
+              <h3>Active Warnings</h3>
+            </div>
+
+            <p class="warning-subtitle">
+              One or more readings are outside the configured safe range.
+            </p>
+
+            <ul id="warning-list">
+              <li>No active warnings.</li>
+            </ul>
+          </div>
+          <!-- SENSOR CARDS -->
+          <div class="cards-grid">
+            <div class="info-card">
+              <div class="card-header">
+                <h3>TEMPERATURE</h3>
+                <span>Live</span>
+              </div>
+
+              <div class="card-value"><span id="temperature">--</span> °C</div>
+
+              <p>Sensor</p>
+            </div>
+
+            <div class="info-card">
+              <div class="card-header">
+                <h3>HUMIDITY</h3>
+                <span>Live</span>
+              </div>
+
+              <div class="card-value"><span id="humidity">--</span> %</div>
+
+              <p>Sensor</p>
+            </div>
+
+            <div class="info-card">
+              <div class="card-header">
+                <h3>MOTION</h3>
+                <span>Live</span>
+              </div>
+
+              <div class="card-value small-text">
+                <span id="motion">--</span>
+              </div>
+
+              <p>Sensor</p>
+            </div>
+
+            <div class="info-card">
+              <div class="card-header">
+                <h3>SOUND</h3>
+                <span>Live</span>
+              </div>
+
+              <div class="card-value small-text">
+                <span id="sound">--</span>
+              </div>
+
+              <p>Sensor</p>
+            </div>
+
+            <div class="info-card">
+              <div class="card-header">
+                <h3>LIGHT</h3>
+                <span>Live</span>
+              </div>
+
+              <div class="card-value small-text">
+                <span id="light">--</span>
+              </div>
+
+              <p>Sensor</p>
+            </div>
+          </div>
+
+          <!-- TEMPERATURE HISTORY -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="section-label">HISTORICAL TRENDS</div>
+                <h3>TEMPERATURE HISTORY</h3>
+              </div>
+
+              <p>Latest 20 readings in NZ time</p>
+            </div>
+
+            <canvas id="temperatureChart"></canvas>
+          </div>
+
+          <!-- COMFORT SCORE -->
+          <div class="comfort-card">
+            <div class="comfort-left">
+              <h3>COMFORT SCORE</h3>
+
+              <canvas id="comfortChart"></canvas>
+
+              <div class="comfort-score-text">
+                <span id="comfort-score">0</span>%
+              </div>
+            </div>
+
+            <div class="comfort-right">
+              <p>
+                Overall environment comfort level based on all sensor readings.
+              </p>
+
+              <div class="comfort-legend">
+                <div><span class="green-dot"></span> 80 - 100% Excellent</div>
+                <div><span class="blue-dot"></span> 60 - 79% Good</div>
+                <div><span class="yellow-dot"></span> 40 - 59% Moderate</div>
+                <div><span class="red-dot"></span> 0 - 39% Poor</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right-section">
+          <!-- AWS ANALYSIS -->
+          <div class="analysis-card">
+            <div class="section-label">QUICK INSIGHTS</div>
+
+            <h3>STUDY SMART ANALYSIS</h3>
+
+            <div class="analysis-box">
+              <p class="analysis-title">Analysis</p>
+              <p id="lambda-status">Loading...</p>
+            </div>
+
+            <div class="analysis-box">
+              <p class="analysis-title">Recommendation</p>
+              <p id="lambda-recommendation">Loading...</p>
+            </div>
+          </div>
+
+          <!-- THRESHOLDS -->
+          <div class="threshold-card">
+            <p class="section-label">Controls</p>
+            <h3>Warning Thresholds</h3>
+
+            <div class="threshold-box">
+              <label>Temperature (°C)</label>
+
+              <div class="threshold-input-row">
+                <div>
+                  <span>Min</span>
+                  <input type="number" id="temp-min" value="0" />
+                </div>
+
+                <div>
+                  <span>Max</span>
+                  <input type="number" id="temp-max" value="40" />
+                </div>
+              </div>
+            </div>
+
+            <div class="threshold-box">
+              <label>Humidity (%)</label>
+
+              <div class="threshold-input-row">
+                <div>
+                  <span>Min</span>
+                  <input type="number" id="hum-min" value="10" />
+                </div>
+
+                <div>
+                  <span>Max</span>
+                  <input type="number" id="hum-max" value="90" />
+                </div>
+              </div>
+            </div>
+
+            <div class="toggle-item">
+              <label>Light</label>
+              <input type="checkbox" id="light-enabled" checked />
+            </div>
+
+            <div class="toggle-item">
+              <label>Sound</label>
+              <input type="checkbox" id="sound-enabled" checked />
+            </div>
+
+            <div class="toggle-item">
+              <label>Motion</label>
+              <input type="checkbox" id="motion-enabled" checked />
+            </div>
+
+            <button
+              type="button"
+              class="save-thresholds-btn"
+              onclick="saveThresholds()"
+            >
+              Save Thresholds
+            </button>
+
+            <p id="threshold-message" class="threshold-message"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
