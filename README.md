@@ -41,24 +41,7 @@ by **AWS Cognito** login (OpenID Connect).
 5. The dashboard polls every 5 seconds and also invokes  
    `SmartStudyAnalysisLambda` for higher-level insights.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Setup Instructions
+## Setup Instructions
 
 You will need to setup the sensors, jumper wires, breadboard, with the raspberry pi.
 
